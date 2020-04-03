@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org/DTD Config 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kakao.assignment">
+	
+	<select id="selectKakaoUsers" parameterType="com.kakao.assignment.objects.UserVO" resultType="com.kakao.assignment.objects.UserVO">
+		SELECT app_user_id
+		     , nickname
+		     , access_token
+		     , refresh_token
+		     , created_at
+	     FROM kakao_users
+	     <if test="nickname != null and nickname !='' ">
+			WHERE nickname = #{nickname} 
+		</if>
+	    
+	</select>
+	
+	<select id="selectKakaoUser" parameterType="com.kakao.assignment.objects.UserVO" resultType="com.kakao.assignment.objects.UserVO">
+		SELECT app_user_id
+		     , nickname
+		     , access_token
+		     , refresh_token
+		     , created_at
+	     FROM kakao_users
+	    WHERE app_user_id = #{app_user_id} 
+	</select>
+
+	<insert id="insertKakaoUser" parameterType="com.kakao.assignment.objects.UserVO">
+		INSERT INTO kakao_users
+		(
+			app_user_id,
+			nickname,
+			access_token,
+			refresh_token,
+			created_at
+		)VALUES
+		(
+			#{app_user_id},
+			#{nickname},
+			#{access_token},
+			#{refresh_token},
+			SYSDATE()
+		) 
+		  	 
+	</insert>
+	
+	<update id="updateKakaoUser" parameterType="com.kakao.assignment.objects.UserVO">
+		UPDATE kakao_users
+		   SET nickname = #{nickname}
+		<if test="access_token != null and access_token !='' ">
+			, access_token = #{access_token}
+		</if>
+		<if test="refresh_token != null and refresh_token !='' ">
+			, refresh_token = #{refresh_token}
+		</if>
+		 WHERE app_user_id = #{app_user_id}
+	</update>
+
+	<delete id="deleteKakaoUser" parameterType="com.kakao.assignment.objects.UserVO">
+		DELETE FROM kakao_users
+		      WHERE	app_user_id = #{app_user_id} 
+	</delete>
+
+</mapper>
