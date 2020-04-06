@@ -10,15 +10,17 @@ import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.kakao.assignment.controller.KakaoController;
-import com.kakao.assignment.objects.TokenVO;
-import com.kakao.assignment.objects.UserVO;
+import com.kakao.assignment.dao.KakaoDAO;
+import com.kakao.assignment.object.LogVO;
+import com.kakao.assignment.object.TokenVO;
+import com.kakao.assignment.object.UserVO;
 
 
 
@@ -26,6 +28,9 @@ import com.kakao.assignment.objects.UserVO;
 public class KakaoService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(KakaoService.class);
+	
+	@Autowired
+	private KakaoDAO kakaoDAO;
 	
 	public TokenVO kakaoGetTokens (String authorize_code) {
 		
@@ -49,6 +54,7 @@ public class KakaoService {
             bw.write(sb.toString());
             bw.flush();
             
+            System.out.println("reqest data: " + reqURL + sb.toString());
             //    결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
             System.out.println("responseCode : " + responseCode);
@@ -61,11 +67,23 @@ public class KakaoService {
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-            System.out.println("response body : " + result);
+            System.out.println("response data : " + result);
+            
+            String headerData = "";
+	        for(String header : conn.getHeaderFields().keySet()) {
+	        	if(header != null) {
+	        		for(String value: conn.getHeaderFields().get(header)) {
+	        			headerData = headerData + header + ":" + value + " ";
+//	        			System.out.println(header + ":" + value);
+	        		}
+	        	}
+	        }
+            
+            //log insert
+            insertLog(conn.getURL().toString(), conn.getRequestMethod(), headerData, sb.toString(), conn.getResponseCode(), "", result);
             
             //    Gson 라이브러리에 포함된 클래스로 JSON파싱 객체 생성
             Gson gson = new Gson();
-            
     		tokens = gson.fromJson(result, TokenVO.class);
             
             System.out.println("access_token (login) : " + tokens.getAccessToken());
@@ -107,6 +125,7 @@ public class KakaoService {
             bw.write(sb.toString());
             bw.flush();
             
+            System.out.println("reqest : " + sb);
             //    결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
             System.out.println("responseCode : " + responseCode);
@@ -151,8 +170,8 @@ public class KakaoService {
 	        
 	        //    요청에 필요한 Header에 포함될 내용
 	        conn.setRequestProperty("Authorization", "Bearer " + tokens.getAccessToken());
-	        
 	        int responseCode = conn.getResponseCode();
+	        
 	        System.out.println("responseCode : " + responseCode);
 	        
 	        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -164,6 +183,19 @@ public class KakaoService {
 	            result += line;
 	        }
 	        System.out.println("response body : " + result);
+	        
+	        String headerData = "";
+	        for(String header : conn.getHeaderFields().keySet()) {
+	        	if(header != null) {
+	        		for(String value: conn.getHeaderFields().get(header)) {
+	        			headerData = headerData + header + ":" + value + " ";
+//	        			System.out.println(header + ":" + value);
+	        		}
+	        	}
+	        }
+	        
+	      //log insert
+            insertLog(conn.getURL().toString(), conn.getRequestMethod(), headerData, "", conn.getResponseCode(), "", result);
 	        
 	        JsonElement element = JsonParser.parseString(result);
 	        
@@ -214,6 +246,20 @@ public class KakaoService {
 	            result += line;
 	        }
 	        System.out.println(result);
+	        
+	        String headerData = "";
+	        for(String header : conn.getHeaderFields().keySet()) {
+	        	if(header != null) {
+	        		for(String value: conn.getHeaderFields().get(header)) {
+	        			headerData = headerData + header + ":" + value + " ";
+//	        			System.out.println(header + ":" + value);
+	        		}
+	        	}
+	        }
+	        
+	      //log insert
+            insertLog(conn.getURL().toString(), conn.getRequestMethod(), headerData, "", conn.getResponseCode(), "", result);
+	        
 	    } catch (IOException e) {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
@@ -240,11 +286,40 @@ public class KakaoService {
 	            result += line;
 	        }
 	        System.out.println(result);
+	        
+	        String headerData = "";
+	        for(String header : conn.getHeaderFields().keySet()) {
+	        	if(header != null) {
+	        		for(String value: conn.getHeaderFields().get(header)) {
+	        			headerData = headerData + header + ":" + value + " ";
+//	        			System.out.println(header + ":" + value);
+	        		}
+	        	}
+	        }
+	        
+	      //log insert
+            insertLog(conn.getURL().toString(), conn.getRequestMethod(), headerData, "", conn.getResponseCode(), "", result);
+            
 	    } catch (IOException e) {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
 	    }
 	}
 	
+	public int insertLog(String request_url, String request_method, String request_header, String request_body, int response_code, String response_header, String response_body) {
+		LogVO log = new LogVO();
+		
+		log.setRequest_url(request_url);
+		log.setRequest_method(request_method);
+		log.setRequest_header(request_header);
+		log.setRequest_body(request_body);
+		log.setResponse_code(response_code);
+		log.setResponse_header(response_header);
+		log.setResponse_body(response_body);
+		
+		int result = kakaoDAO.insertKakaoApiLog(log);
+		
+		return result;
+	}
 
 }

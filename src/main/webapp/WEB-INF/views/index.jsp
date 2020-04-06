@@ -16,7 +16,7 @@
     <c:if test="${appUserId ne null}">
         <h1>로그인 성공입니다</h1>
         <input type="button" value="사용자 조회" onclick="location.href='/getUserInfo'">
-        <input type="button" value="로그아웃" onclick="location.href='/logout'">
+        <input type="button" value="로그아웃" onclick="location.href='/logout'; window.close();">
         <input type="button" value="탈퇴하기" onclick="location.href='/unlink'">
     </c:if>
 </body>

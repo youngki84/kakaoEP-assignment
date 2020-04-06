@@ -44,7 +44,6 @@
 			#{refresh_token},
 			SYSDATE()
 		) 
-		  	 
 	</insert>
 	
 	<update id="updateKakaoUser" parameterType="com.kakao.assignment.objects.UserVO">
@@ -63,5 +62,47 @@
 		DELETE FROM kakao_users
 		      WHERE	app_user_id = #{app_user_id} 
 	</delete>
+	
+	<select id="seleteKakaoApiLogs" parameterType="com.kakao.assignment.objects.LogVO" resultType="com.kakao.assignment.objects.LogVO">
+		SELECT request_url
+			 , request_method
+		     , request_header
+		     , request_body
+		     , response_code
+		     , response_header
+		     , response_body
+		     , created_at
+	     FROM kakao_api_logs
+	    WHERE 1=1
+	     <if test="request_body != null and request_body !='' ">
+			AND request_body like '%' || #{request_body} || '%' 
+		</if>
+		<if test="response_body != null and response_body !='' ">
+			AND response_body like '%' || #{response_body} || '%' 
+		</if>
+	</select>
 
+	<insert id="insertKakaoApiLog" parameterType="com.kakao.assignment.objects.LogVO">
+		INSERT INTO kakao_api_logs
+		(
+			request_url
+		  , request_method
+		  , request_header
+		  , request_body
+		  , response_code
+		  , response_header
+		  , response_body
+		  , created_at
+		)VALUES
+		(
+			#{request_url}
+		  , #{request_method}
+		  , #{request_header}
+		  , #{request_body}
+		  , #{response_code}
+		  , #{response_header}
+		  , #{response_body}
+		  , SYSDATE()
+		) 
+	</insert>
 </mapper>

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.kakao.assignment.dao.KakaoDAO;
-import com.kakao.assignment.objects.TokenVO;
-import com.kakao.assignment.objects.UserVO;
+import com.kakao.assignment.object.TokenVO;
+import com.kakao.assignment.object.UserVO;
 import com.kakao.assignment.service.KakaoService;
 
 @Controller
@@ -29,7 +29,7 @@ public class KakaoController {
 	private static final Logger logger = LoggerFactory.getLogger(KakaoController.class);
 	
 	@Autowired
-    private KakaoService kakao;
+    private KakaoService kakaoService;
     
 	@Autowired
 	private KakaoDAO kakaoDAO;
@@ -48,15 +48,15 @@ public class KakaoController {
     /**
 	 * 카카오 유저 로그인 (카카오API 사용) 
 	 *
-	 * @param code       redirect로 얻어온 code
+	 * @param code       redirect로 얻어온 값 
 	 * @param session    세션 정보 
 	 */
     @RequestMapping(value="/login")
     public String login(@RequestParam("code") String code, HttpSession session) {
-        tokens = kakao.kakaoGetTokens(code);
+        tokens = kakaoService.kakaoGetTokens(code);
         System.out.println("controller access_token : " + tokens.getAccessToken());
         
-        UserVO userInfo = kakao.kakaoGetUserInfo(tokens);
+        UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
         
         if(!userInfo.getNickname().isEmpty()) {
         	UserVO user = kakaoDAO.selectKakaoUser(userInfo);
@@ -82,10 +82,10 @@ public class KakaoController {
 	 */
     @RequestMapping(value="/refreshlogin", method=RequestMethod.POST)
     public String loginAfterRefresh(HttpSession session) {
-    	tokens = kakao.kakaoGetAccessTokenAfterRefresh(tokens);
+    	tokens = kakaoService.kakaoGetAccessTokenAfterRefresh(tokens);
         System.out.println("controller access_token : " + tokens.getAccessToken());
         
-        UserVO userInfo = kakao.kakaoGetUserInfo(tokens);
+        UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
         System.out.println("login Controller : " + userInfo);
         
 //            클라이언트의 이메일이 존재할 때 세션에 해당 이메일과 토큰 등록
@@ -110,7 +110,7 @@ public class KakaoController {
     		throw new IOException("Access token is empty");
     	}
     	else {
-    		UserVO userInfo = kakao.kakaoGetUserInfo(tokens);
+    		UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
     	}
         
         return "index";
@@ -123,9 +123,10 @@ public class KakaoController {
 	 */
     @RequestMapping(value="/logout")
     public String logout(HttpSession session) {
-        kakao.kakaoLogout((String)session.getAttribute("access_Token"));
+        kakaoService.kakaoLogout((String)session.getAttribute("access_Token"));
         session.removeAttribute("access_Token");
         session.removeAttribute("appUserId");
+        session.setAttribute("logout", "yes");
         return "index";
     }
 
@@ -136,7 +137,7 @@ public class KakaoController {
 	 */
     @RequestMapping(value="/unlink")
     public String unlink(HttpSession session) {
-        kakao.kakaoUnlink((String)session.getAttribute("access_Token"));
+        kakaoService.kakaoUnlink((String)session.getAttribute("access_Token"));
         session.removeAttribute("access_Token");
         session.removeAttribute("appUserId");
         return "index";

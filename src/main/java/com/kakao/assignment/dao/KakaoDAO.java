@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kakao.assignment.objects.UserVO;
+import com.kakao.assignment.object.LogVO;
+import com.kakao.assignment.object.UserVO;
 
 
 @Component
@@ -23,13 +24,13 @@ public class KakaoDAO {
 
 	public List<UserVO> selectKakaoUsers(UserVO userInfo) {
 		logger.info("selectKakaoUsers" );
-		System.out.println("selectKakaoUsers");
+		//System.out.println("selectKakaoUsers");
 		return sqlSession.selectList(Namespace + ".selectKakaoUsers", userInfo);
 	}
 	
 	public UserVO selectKakaoUser(UserVO userInfo) {
 		logger.info("selectKakaoUser" );
-		System.out.println("selectKakaoUser");
+		//System.out.println("selectKakaoUser");
 		return sqlSession.selectOne(Namespace + ".selectKakaoUser", userInfo);
 	}
 
@@ -51,12 +52,18 @@ public class KakaoDAO {
 		return sqlSession.delete(Namespace + ".deleteKakaoUser", userInfo);
 	}
 	
-//	public List<NoticeResultVO> selectNoticeAll(NoticeVO noticevo) {
-//		logger.info("selectNoticeAll" );
-//
-//		return sqlSession.selectList(Namespace + ".selectNoticeAll",noticevo);
-//	}
-
+	public List<LogVO> seleteKakaoApiLogs(LogVO log) {
+		logger.info("seleteKakaoApiLogs" );
+		System.out.println("seleteKakaoApiLogs");
+		return sqlSession.selectList(Namespace + ".selectKakaoApiLogs", log);
+	}
+	
+	public int insertKakaoApiLog(LogVO log) {
+		logger.info("insertKakaoApiLog" );
+		System.out.println("insertKakaoApiLog");
+		return sqlSession.insert(Namespace + ".insertKakaoApiLog", log);
+	}
+	
 	/**
 	 * @return the sqlSession
 	 */

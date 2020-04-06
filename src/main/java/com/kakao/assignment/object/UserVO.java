@@ -1,4 +1,4 @@
-package com.kakao.assignment.objects;
+package com.kakao.assignment.object;
 
 public class UserVO {
 	
