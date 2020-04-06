@@ -306,7 +306,7 @@ public class KakaoService {
 	    }
 	}
 	
-	public int insertLog(String request_url, String request_method, String request_header, String request_body, int response_code, String response_header, String response_body) {
+	public void insertLog(String request_url, String request_method, String request_header, String request_body, int response_code, String response_header, String response_body) {
 		LogVO log = new LogVO();
 		
 		log.setRequest_url(request_url);
@@ -317,9 +317,8 @@ public class KakaoService {
 		log.setResponse_header(response_header);
 		log.setResponse_body(response_body);
 		
-		int result = kakaoDAO.insertKakaoApiLog(log);
+		kakaoDAO.insertKakaoApiLog(log);
 		
-		return result;
 	}
 
 }

@@ -5,7 +5,7 @@
 
 <mapper namespace="com.kakao.assignment">
 	
-	<select id="selectKakaoUsers" parameterType="com.kakao.assignment.objects.UserVO" resultType="com.kakao.assignment.objects.UserVO">
+	<select id="selectKakaoUsers" parameterType="com.kakao.assignment.object.UserVO" resultType="com.kakao.assignment.object.UserVO">
 		SELECT app_user_id
 		     , nickname
 		     , access_token
@@ -18,7 +18,7 @@
 	    
 	</select>
 	
-	<select id="selectKakaoUser" parameterType="com.kakao.assignment.objects.UserVO" resultType="com.kakao.assignment.objects.UserVO">
+	<select id="selectKakaoUser" parameterType="com.kakao.assignment.object.UserVO" resultType="com.kakao.assignment.object.UserVO">
 		SELECT app_user_id
 		     , nickname
 		     , access_token
@@ -28,7 +28,7 @@
 	    WHERE app_user_id = #{app_user_id} 
 	</select>
 
-	<insert id="insertKakaoUser" parameterType="com.kakao.assignment.objects.UserVO">
+	<insert id="insertKakaoUser" parameterType="com.kakao.assignment.object.UserVO">
 		INSERT INTO kakao_users
 		(
 			app_user_id,
@@ -46,7 +46,7 @@
 		) 
 	</insert>
 	
-	<update id="updateKakaoUser" parameterType="com.kakao.assignment.objects.UserVO">
+	<update id="updateKakaoUser" parameterType="com.kakao.assignment.object.UserVO">
 		UPDATE kakao_users
 		   SET nickname = #{nickname}
 		<if test="access_token != null and access_token !='' ">
@@ -58,12 +58,12 @@
 		 WHERE app_user_id = #{app_user_id}
 	</update>
 
-	<delete id="deleteKakaoUser" parameterType="com.kakao.assignment.objects.UserVO">
+	<delete id="deleteKakaoUser" parameterType="com.kakao.assignment.object.UserVO">
 		DELETE FROM kakao_users
 		      WHERE	app_user_id = #{app_user_id} 
 	</delete>
 	
-	<select id="seleteKakaoApiLogs" parameterType="com.kakao.assignment.objects.LogVO" resultType="com.kakao.assignment.objects.LogVO">
+	<select id="seleteKakaoApiLogs" parameterType="com.kakao.assignment.object.LogVO" resultType="com.kakao.assignment.object.LogVO">
 		SELECT request_url
 			 , request_method
 		     , request_header
@@ -82,7 +82,7 @@
 		</if>
 	</select>
 
-	<insert id="insertKakaoApiLog" parameterType="com.kakao.assignment.objects.LogVO">
+	<insert id="insertKakaoApiLog" parameterType="com.kakao.assignment.object.LogVO">
 		INSERT INTO kakao_api_logs
 		(
 			request_url

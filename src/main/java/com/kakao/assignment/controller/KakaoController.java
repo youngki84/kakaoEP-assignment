@@ -4,6 +4,8 @@ package com.kakao.assignment.controller;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.session.SqlSession;
@@ -16,12 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.gson.Gson;
 import com.kakao.assignment.dao.KakaoDAO;
 import com.kakao.assignment.object.TokenVO;
 import com.kakao.assignment.object.UserVO;
 import com.kakao.assignment.service.KakaoService;
+import com.kakao.assignment.util.Utils;
 
 @Controller
 public class KakaoController {
@@ -53,11 +58,24 @@ public class KakaoController {
 	 */
     @RequestMapping(value="/login")
     public String login(@RequestParam("code") String code, HttpSession session) {
+    	
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
+    	
         tokens = kakaoService.kakaoGetTokens(code);
         System.out.println("controller access_token : " + tokens.getAccessToken());
         
         UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
-        
         if(!userInfo.getNickname().isEmpty()) {
         	UserVO user = kakaoDAO.selectKakaoUser(userInfo);
         	if(user == null) {
@@ -104,6 +122,19 @@ public class KakaoController {
     @RequestMapping(value="/getUserInfoFrKaKao")
     public String getUserInfo(HttpSession session) throws IOException {
         
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
+    	
 //        UserVO userInfo = kakao.kakaoGetUserInfo(session.getAttribute("access_Token").toString());
     	if(tokens.getAccessToken().isEmpty()) {
     		System.out.println("Access token is empty");
@@ -123,6 +154,20 @@ public class KakaoController {
 	 */
     @RequestMapping(value="/logout")
     public String logout(HttpSession session) {
+    	
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
+    	
         kakaoService.kakaoLogout((String)session.getAttribute("access_Token"));
         session.removeAttribute("access_Token");
         session.removeAttribute("appUserId");
@@ -137,6 +182,20 @@ public class KakaoController {
 	 */
     @RequestMapping(value="/unlink")
     public String unlink(HttpSession session) {
+    	
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
+    	
         kakaoService.kakaoUnlink((String)session.getAttribute("access_Token"));
         session.removeAttribute("access_Token");
         session.removeAttribute("appUserId");
@@ -154,7 +213,6 @@ public class KakaoController {
 	 */
     @RequestMapping(value="/api/users", method=RequestMethod.GET)
     public @ResponseBody String getUsersInfo(@RequestParam(value="nickname", defaultValue="") String nickname) throws IOException {
-        
     	UserVO userInfo = new UserVO();
     	userInfo.setNickname(nickname);
         
@@ -168,6 +226,19 @@ public class KakaoController {
     	Gson gson = new Gson();
     	
     	String result = gson.toJson(users);
+    	 
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", result);
     	
         return result;
     }
@@ -192,6 +263,19 @@ public class KakaoController {
     	Gson gson = new Gson();
     	
     	String result = gson.toJson(user);
+    	
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", result);
     	
         return result;
     }
@@ -220,7 +304,22 @@ public class KakaoController {
     		kakaoDAO.updateKakaoUser(userInfo);
     	}
     	
-        return "Update Success.";
+    	String result = "Update Success.";
+    	
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", result);
+		
+        return result;
     }
     
     /**
@@ -245,7 +344,22 @@ public class KakaoController {
     		kakaoDAO.deleteKakaoUser(userInfo);
     	}
     	
-        return "Delete Success.";
+    	String result = "Delete Success.";
+    	
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", result);
+    	
+        return result;
     }
 	
 }
