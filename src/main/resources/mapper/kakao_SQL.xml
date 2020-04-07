@@ -63,23 +63,31 @@
 		      WHERE	app_user_id = #{app_user_id} 
 	</delete>
 	
-	<select id="seleteKakaoApiLogs" parameterType="com.kakao.assignment.object.LogVO" resultType="com.kakao.assignment.object.LogVO">
-		SELECT request_url
-			 , request_method
-		     , request_header
-		     , request_body
-		     , response_code
-		     , response_header
-		     , response_body
-		     , created_at
-	     FROM kakao_api_logs
-	    WHERE 1=1
-	     <if test="request_body != null and request_body !='' ">
-			AND request_body like '%' || #{request_body} || '%' 
-		</if>
-		<if test="response_body != null and response_body !='' ">
-			AND response_body like '%' || #{response_body} || '%' 
-		</if>
+	<select id="selectKakaoApiLogs" parameterType="String" resultType="com.kakao.assignment.object.LogVO">
+		SELECT A.request_url as request_url
+		     , A.request_method as request_method
+		     , A.request_header as request_header
+		     , A.request_body as request_body
+		     , A.response_code as response_code
+		     , A.response_header as response_header
+		     , A.response_body as response_body
+		     , A.created_at as created_at
+	  	  FROM
+			(SELECT CONCAT( request_url, request_method, request_header, request_body, response_code, response_header, response_body ) as full_log
+			     , request_url 
+			     , request_method 
+			     , request_header 
+			     , request_body 
+			     , response_code 
+			     , response_header 
+			     , response_body 
+			     , created_at 
+			FROM kakao_api_logs ) A
+		WHERE 1=1
+		 <if test="search_string != null and search_string !='' ">
+		   AND A.full_log LIKE '%' || #{search_string} || '%'
+		  </if>
+
 	</select>
 
 	<insert id="insertKakaoApiLog" parameterType="com.kakao.assignment.object.LogVO">

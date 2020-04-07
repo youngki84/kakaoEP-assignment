@@ -9,6 +9,7 @@ public class LogVO {
 	private int response_code;
 	private String response_header;
 	private String response_body;
+	private String created_at;
 	
 	public String getRequest_url() {
 		return request_url;
@@ -51,6 +52,12 @@ public class LogVO {
 	}
 	public void setResponse_code(int response_code) {
 		this.response_code = response_code;
+	}
+	public String getCreated_at() {
+		return created_at;
+	}
+	public void setCreated_at(String created_at) {
+		this.created_at = created_at;
 	}
 
 }

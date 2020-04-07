@@ -23,6 +23,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.gson.Gson;
 import com.kakao.assignment.dao.KakaoDAO;
+import com.kakao.assignment.object.LogVO;
 import com.kakao.assignment.object.TokenVO;
 import com.kakao.assignment.object.UserVO;
 import com.kakao.assignment.service.KakaoService;
@@ -45,7 +46,7 @@ public class KakaoController {
     @RequestMapping(value="/")
     public String index() {
         
-        return "index";
+        return "main";
     }
     
     public static TokenVO tokens;
@@ -90,7 +91,7 @@ public class KakaoController {
             session.setAttribute("appUserId", userInfo.getAppUserId());
             session.setAttribute("access_Token", tokens.getAccessToken());
         }
-        return "index";
+        return "login";
     }
     
     /**
@@ -106,12 +107,11 @@ public class KakaoController {
         UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
         System.out.println("login Controller : " + userInfo);
         
-//            클라이언트의 이메일이 존재할 때 세션에 해당 이메일과 토큰 등록
         if (userInfo.getEmail() != null) {
             session.setAttribute("appUserId", userInfo.getAppUserId());
             session.setAttribute("access_Token", tokens.getAccessToken());
         }
-        return "index";
+        return "login";
     }
     
     /**
@@ -144,7 +144,7 @@ public class KakaoController {
     		UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
     	}
         
-        return "index";
+        return "login";
     }
     
     /**
@@ -172,7 +172,8 @@ public class KakaoController {
         session.removeAttribute("access_Token");
         session.removeAttribute("appUserId");
         session.setAttribute("logout", "yes");
-        return "index";
+        
+        return "logout";
     }
 
     /**
@@ -199,7 +200,7 @@ public class KakaoController {
         kakaoService.kakaoUnlink((String)session.getAttribute("access_Token"));
         session.removeAttribute("access_Token");
         session.removeAttribute("appUserId");
-        return "index";
+        return "main";
     }
     
     /**
@@ -221,7 +222,6 @@ public class KakaoController {
     	for(UserVO user : users) {
     		System.out.println(user.getNickname());
     	}
-    	
     	
     	Gson gson = new Gson();
     	
@@ -293,6 +293,7 @@ public class KakaoController {
     @RequestMapping(value="/api/user/{appUserId}", method=RequestMethod.PUT)
     public @ResponseBody String updateUserInfo(@PathVariable("appUserId") long appUserId, @RequestParam(value="nickname") String nickname) throws IOException {
         
+    	String result = "Update Fail.";
     	UserVO userInfo = new UserVO();
     	userInfo.setAppUserId(appUserId);
     	userInfo.setNickname(nickname);
@@ -301,10 +302,11 @@ public class KakaoController {
     	if(user == null) {
     		throw new IOException("User is empty.");
     	} else {
-    		kakaoDAO.updateKakaoUser(userInfo);
+    		int res = kakaoDAO.updateKakaoUser(userInfo);
+    		if(res == 1) {
+    			result = "Update Success.";
+    		}
     	}
-    	
-    	String result = "Update Success.";
     	
     	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
@@ -334,6 +336,7 @@ public class KakaoController {
     @RequestMapping(value="/api/user/{appUserId}", method=RequestMethod.DELETE)
     public @ResponseBody String deleteUserInfo(@PathVariable("appUserId") long appUserId) throws IOException {
         
+    	String result = "Delete Fail.";
     	UserVO userInfo = new UserVO();
     	userInfo.setAppUserId(appUserId);
         
@@ -341,10 +344,11 @@ public class KakaoController {
     	if(user == null) {
     		throw new IOException("User is empty.");
     	} else {
-    		kakaoDAO.deleteKakaoUser(userInfo);
+    		int res = kakaoDAO.deleteKakaoUser(userInfo);
+    		if(res == 1) {
+    			result = "Delete Success.";
+    		}
     	}
-    	
-    	String result = "Delete Success.";
     	
     	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
@@ -358,6 +362,41 @@ public class KakaoController {
 		System.out.println("reqBodyData = " + reqBodyData);
 		
     	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", result);
+    	
+        return result;
+    }
+    
+    /**
+	 * DB에 저장된 로그를 검색하는 API 
+	 * ex) http://localhost:8000/api/log/kauth
+	 * RequestMethod.GET
+	 * 
+	 * @param searchString    검색할 내용  
+	 * @throws Throwable throws
+	 * 
+	 */
+    @RequestMapping(value="/api/log/{searchString}", method=RequestMethod.GET)
+    public @ResponseBody String deleteUserInfo(@PathVariable("searchString") String searchString) throws IOException {
+        
+        
+    	List<LogVO> logs = kakaoDAO.seleteKakaoApiLogs(searchString);
+    	
+    	Gson gson = new Gson();
+    	
+    	String result = gson.toJson(logs);
+    	
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+		
+    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+		String reqBodyData = Utils.makeBodyFromRequest(request);
+		int resCode = response.getStatus();
+		
+		System.out.println("reqHeaderData = " + reqHeaderData);
+		System.out.println("reqBodyData = " + reqBodyData);
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", result.substring(0, 999));
     	
         return result;
     }

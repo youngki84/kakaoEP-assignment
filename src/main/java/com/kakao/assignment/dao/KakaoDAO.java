@@ -52,10 +52,10 @@ public class KakaoDAO {
 		return sqlSession.delete(Namespace + ".deleteKakaoUser", userInfo);
 	}
 	
-	public List<LogVO> seleteKakaoApiLogs(LogVO log) {
+	public List<LogVO> seleteKakaoApiLogs(String search_string) {
 		logger.info("seleteKakaoApiLogs" );
 		System.out.println("seleteKakaoApiLogs");
-		return sqlSession.selectList(Namespace + ".selectKakaoApiLogs", log);
+		return sqlSession.selectList(Namespace + ".selectKakaoApiLogs", search_string);
 	}
 	
 	public int insertKakaoApiLog(LogVO log) {

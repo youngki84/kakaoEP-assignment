@@ -40,11 +40,9 @@ public class KakaoService {
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             
-            //    POST 요청을 위해 기본값이 false인 setDoOutput을 true로
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             
-            //    POST 요청에 필요로 요구하는 파라미터 스트림을 통해 전송
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
@@ -55,11 +53,9 @@ public class KakaoService {
             bw.flush();
             
             System.out.println("reqest data: " + reqURL + sb.toString());
-            //    결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
             System.out.println("responseCode : " + responseCode);
  
-            //    요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = "";
             String result = "";
@@ -82,7 +78,6 @@ public class KakaoService {
             //log insert
             insertLog(conn.getURL().toString(), conn.getRequestMethod(), headerData, sb.toString(), conn.getResponseCode(), "", result);
             
-            //    Gson 라이브러리에 포함된 클래스로 JSON파싱 객체 생성
             Gson gson = new Gson();
     		tokens = gson.fromJson(result, TokenVO.class);
             
@@ -112,11 +107,9 @@ public class KakaoService {
         	URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             
-            //    POST 요청을 위해 기본값이 false인 setDoOutput을 true로
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             
-            //    POST 요청에 필요로 요구하는 파라미터 스트림을 통해 전송
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=refresh_token");
@@ -126,11 +119,9 @@ public class KakaoService {
             bw.flush();
             
             System.out.println("reqest : " + sb);
-            //    결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
             System.out.println("responseCode : " + responseCode);
  
-            //    요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = "";
             String result = "";
@@ -140,7 +131,6 @@ public class KakaoService {
             }
             System.out.println("response body : " + result);
             
-            //    Gson 라이브러리에 포함된 클래스로 JSON파싱 객체 생성
             Gson gson = new Gson();
             
     		tokens = gson.fromJson(result, TokenVO.class);
@@ -160,7 +150,6 @@ public class KakaoService {
 	
 	public UserVO kakaoGetUserInfo (TokenVO tokens) {
 	    
-	    //    요청하는 클라이언트마다 가진 정보가 다를 수 있기에 HashMap타입으로 선언
 	    UserVO userInfo = new UserVO();
 	    String reqURL = "https://kapi.kakao.com/v2/user/me";
 	    try {
@@ -168,7 +157,6 @@ public class KakaoService {
 	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	        conn.setRequestMethod("POST");
 	        
-	        //    요청에 필요한 Header에 포함될 내용
 	        conn.setRequestProperty("Authorization", "Bearer " + tokens.getAccessToken());
 	        int responseCode = conn.getResponseCode();
 	        
