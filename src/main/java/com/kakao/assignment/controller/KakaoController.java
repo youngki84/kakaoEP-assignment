@@ -45,9 +45,15 @@ public class KakaoController {
 	SqlSession sqlSession;
 	
     @RequestMapping(value="/")
-    public String index() {
+    public String main() {
         
         return "main";
+    }
+    
+    @RequestMapping(value="/log")
+    public String log() {
+        
+        return "searchLog";
     }
     
     public static TokenVO tokens;
@@ -91,7 +97,7 @@ public class KakaoController {
         if (userInfo.getAppUserId() != 0) {
             session.setAttribute("appUserId", userInfo.getAppUserId());
             session.setAttribute("nickName", userInfo.getNickname());
-            session.setAttribute("email", userInfo.getNickname());
+            session.setAttribute("email", userInfo.getEmail());
             session.setAttribute("accessToken", tokens.getAccessToken());
             session.setAttribute("refreshToken", tokens.getRefreshToken());
         }
@@ -372,19 +378,18 @@ public class KakaoController {
     
     /**
 	 * DB에 저장된 로그를 검색하는 API 
-	 * ex) http://localhost:8000/api/log/kauth
+	 * ex) http://localhost:8000/api/log?searchString=kauth
 	 * RequestMethod.GET
 	 * 
 	 * @param searchString    검색할 내용  
 	 * @throws Throwable throws
 	 * 
 	 */
-    @RequestMapping(value = {"/api/log/{searchString}","/api/log"}, method=RequestMethod.GET)
-    public @ResponseBody String selectApiLogs(@PathVariable("searchString") Optional<String> searchString) throws IOException {
+    @RequestMapping(value = "/api/log", method=RequestMethod.GET)
+    public @ResponseBody String selectApiLogs(@RequestParam(value="searchString", defaultValue="") String searchString) throws IOException {
 
-    	String search = searchString.isPresent() ? searchString.get() : "";
-    	System.out.println("search : " + search);
-    	List<LogVO> logs = kakaoDAO.seleteKakaoApiLogs(search);
+    	System.out.println("searchString : " + searchString);
+    	List<LogVO> logs = kakaoDAO.seleteKakaoApiLogs(searchString);
     	
     	Gson gson = new Gson();
     	
