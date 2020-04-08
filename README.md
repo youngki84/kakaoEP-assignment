@@ -33,6 +33,6 @@
 ## 실행 방법 (로컬실행 기준) 
 1. Project Download : https://github.com/youngki84/kakaoEP-assignment
 2. 이클립스(또는 다른 IDE)에서 Project import 후 spring boot 내장 톰캣 서버 start
-3-1. 카카오 로그인 관련 서비스는 http://localhost:8000 으로 접속  
-3-1. 로그 검색 관련 서비스는 http://localhost:8000/log 으로 접속 
+3. 카카오 로그인 관련 서비스는 http://localhost:8000 으로 접속  
+4. 로그 검색 관련 서비스는 http://localhost:8000/log 으로 접속 
 	

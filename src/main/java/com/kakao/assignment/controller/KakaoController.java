@@ -3,7 +3,6 @@ package com.kakao.assignment.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -223,7 +223,7 @@ public class KakaoController {
 	 * 
 	 */
     @RequestMapping(value="/api/users", method=RequestMethod.GET)
-    public @ResponseBody String getUsersInfo(@RequestParam(value="nickname", defaultValue="") String nickname) throws IOException {
+    public @ResponseBody String getUsersInfo(@RequestParam(value="nickname", defaultValue="") String nickname, Model model) throws IOException {
     	UserVO userInfo = new UserVO();
     	userInfo.setNickname(nickname);
         
@@ -236,6 +236,10 @@ public class KakaoController {
     	Gson gson = new Gson();
     	
     	String result = gson.toJson(users);
+    	
+    	System.out.println("result : " + result);
+    	
+//    	model.addAttribute("result", result);
     	 
     	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
@@ -376,24 +380,21 @@ public class KakaoController {
         return result;
     }
     
-    /**
-	 * DB에 저장된 로그를 검색하는 API 
-	 * ex) http://localhost:8000/api/log?searchString=kauth
-	 * RequestMethod.GET
-	 * 
-	 * @param searchString    검색할 내용  
-	 * @throws Throwable throws
-	 * 
-	 */
     @RequestMapping(value = "/api/log", method=RequestMethod.GET)
-    public @ResponseBody String selectApiLogs(@RequestParam(value="searchString", defaultValue="") String searchString) throws IOException {
+    public @ResponseBody String selectApiLogs(@RequestParam(value="searchString", defaultValue="") String searchString, Model model) throws IOException {
 
     	System.out.println("searchString : " + searchString);
     	List<LogVO> logs = kakaoDAO.seleteKakaoApiLogs(searchString);
-    	
+    	String result = "";
     	Gson gson = new Gson();
     	
-    	String result = gson.toJson(logs);
+    	if(logs.isEmpty()) {
+    		//result = "검색 결과가 없습니다.";
+    	} else {
+    		result = gson.toJson(logs);
+    	}
+    	
+    	//model.addAttribute("result", result);
     	
     	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
@@ -414,6 +415,8 @@ public class KakaoController {
 		}
 		
     	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", subResult);
+    	
+    	System.out.println("result : " + result);
     	
         return result;
     }
