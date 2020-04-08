@@ -3,6 +3,7 @@ package com.kakao.assignment.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -87,9 +88,12 @@ public class KakaoController {
         	
         }
         
-        if (userInfo.getEmail() != null) {
+        if (userInfo.getAppUserId() != 0) {
             session.setAttribute("appUserId", userInfo.getAppUserId());
-            session.setAttribute("access_Token", tokens.getAccessToken());
+            session.setAttribute("nickName", userInfo.getNickname());
+            session.setAttribute("email", userInfo.getNickname());
+            session.setAttribute("accessToken", tokens.getAccessToken());
+            session.setAttribute("refreshToken", tokens.getRefreshToken());
         }
         return "login";
     }
@@ -375,11 +379,12 @@ public class KakaoController {
 	 * @throws Throwable throws
 	 * 
 	 */
-    @RequestMapping(value="/api/log/{searchString}", method=RequestMethod.GET)
-    public @ResponseBody String deleteUserInfo(@PathVariable("searchString") String searchString) throws IOException {
-        
-        
-    	List<LogVO> logs = kakaoDAO.seleteKakaoApiLogs(searchString);
+    @RequestMapping(value = {"/api/log/{searchString}","/api/log"}, method=RequestMethod.GET)
+    public @ResponseBody String selectApiLogs(@PathVariable("searchString") Optional<String> searchString) throws IOException {
+
+    	String search = searchString.isPresent() ? searchString.get() : "";
+    	System.out.println("search : " + search);
+    	List<LogVO> logs = kakaoDAO.seleteKakaoApiLogs(search);
     	
     	Gson gson = new Gson();
     	
@@ -396,7 +401,14 @@ public class KakaoController {
 		System.out.println("reqHeaderData = " + reqHeaderData);
 		System.out.println("reqBodyData = " + reqBodyData);
 		
-    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", result.substring(0, 999));
+		String subResult = "";
+		if(result.length() > 1000) {
+			subResult = result.substring(0, 999);
+		} else {
+			subResult = result;
+		}
+		
+    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", subResult);
     	
         return result;
     }

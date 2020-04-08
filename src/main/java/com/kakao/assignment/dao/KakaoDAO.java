@@ -55,6 +55,9 @@ public class KakaoDAO {
 	public List<LogVO> seleteKakaoApiLogs(String search_string) {
 		logger.info("seleteKakaoApiLogs" );
 		System.out.println("seleteKakaoApiLogs");
+		if(search_string.length() > 0) {
+			search_string = "%" + search_string + "%";
+		}
 		return sqlSession.selectList(Namespace + ".selectKakaoApiLogs", search_string);
 	}
 	

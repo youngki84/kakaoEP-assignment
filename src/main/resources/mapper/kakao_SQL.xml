@@ -85,7 +85,7 @@
 			FROM kakao_api_logs ) A
 		WHERE 1=1
 		 <if test="search_string != null and search_string !='' ">
-		   AND A.full_log LIKE '%' || #{search_string} || '%'
+		   AND A.full_log LIKE #{search_string}
 		  </if>
 
 	</select>
