@@ -24,37 +24,31 @@ public class KakaoDAO {
 
 	public List<UserVO> selectKakaoUsers(UserVO userInfo) {
 		logger.info("selectKakaoUsers" );
-		//System.out.println("selectKakaoUsers");
 		return sqlSession.selectList(Namespace + ".selectKakaoUsers", userInfo);
 	}
 	
 	public UserVO selectKakaoUser(UserVO userInfo) {
 		logger.info("selectKakaoUser" );
-		//System.out.println("selectKakaoUser");
 		return sqlSession.selectOne(Namespace + ".selectKakaoUser", userInfo);
 	}
 
 	public int insertKakaoUser(UserVO userInfo) {
 		logger.info("insertKakaoUser" );
-		System.out.println("insertKakaoUser");
 		return sqlSession.insert(Namespace + ".insertKakaoUser", userInfo);
 	}
 
 	public int updateKakaoUser(UserVO userInfo) {
 		logger.info("updateKakaoUser" );
-		System.out.println("updateKakaoUser");
 		return sqlSession.update(Namespace + ".updateKakaoUser", userInfo);
 	}
 	
 	public int deleteKakaoUser(long appUserId) {
 		logger.info("deleteKakaoUser" );
-		System.out.println("deleteKakaoUser");
 		return sqlSession.delete(Namespace + ".deleteKakaoUser", appUserId);
 	}
 	
 	public List<LogVO> seleteKakaoApiLogs(String search_string) {
 		logger.info("seleteKakaoApiLogs" );
-		System.out.println("seleteKakaoApiLogs");
 		if(search_string.length() > 0) {
 			search_string = "%" + search_string + "%";
 		}
@@ -63,7 +57,6 @@ public class KakaoDAO {
 	
 	public int insertKakaoApiLog(LogVO log) {
 		logger.info("insertKakaoApiLog" );
-		System.out.println("insertKakaoApiLog");
 		return sqlSession.insert(Namespace + ".insertKakaoApiLog", log);
 	}
 	

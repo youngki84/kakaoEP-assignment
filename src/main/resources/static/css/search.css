@@ -457,7 +457,7 @@ html {
     display: -ms-flexbox;
     display: flex;
     -ms-flex-pack: center;
-        justify-content: center;
+        justify-content: left;
     -ms-flex-align: center;
         align-items: center;
     font-family: 'Poppins', sans-serif;
@@ -466,6 +466,7 @@ html {
     background-position: center center;
     padding: 15px;
     margin-top: 10px;
+    margin-left: 40px;
   }
   
   .s01 form {
@@ -612,7 +613,7 @@ html {
   
   
  .zui-table {
-	margin-left: 69px;
+	margin-left: 50px;
     border-collapse: collapse;
     border-spacing: 0;
     font: normal 13px Arial, sans-serif;

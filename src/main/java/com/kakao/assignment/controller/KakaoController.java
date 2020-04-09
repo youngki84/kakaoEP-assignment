@@ -393,14 +393,9 @@ public class KakaoController {
 
     	System.out.println("searchString : " + searchString);
     	List<LogVO> logs = kakaoDAO.seleteKakaoApiLogs(searchString);
-    	String result = "";
     	Gson gson = new Gson();
     	
-    	if(logs.isEmpty()) {
-    		//result = "검색 결과가 없습니다.";
-    	} else {
-    		result = gson.toJson(logs);
-    	}
+		String result = gson.toJson(logs);
     	
     	//model.addAttribute("result", result);
     	

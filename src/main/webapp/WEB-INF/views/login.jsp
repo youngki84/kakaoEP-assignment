@@ -15,7 +15,7 @@
                 fn_tbody_clear();
 
                 $.ajax({
-                    url: "/api/users?nickname=" + $("#nickname").val(),
+                    url: "/api/users?nickname=" + $("#search").val(),
                     dataType: 'json',
                     success: function(resultData) {
                         console.log(resultData);
@@ -52,11 +52,11 @@
     </head>
 
     <body>
-        <h1 style="margin-left: 100px;">로그인 되었습니다.</h1>
-        <div class="user info" style="border: ridge;text-align: center;-webkit-text-stroke: medium;">
-            <br> **사용자 정보**
-            <br>
-            <br> App User Id : ${appUserId}
+        <h1 style="margin-left: 100px;">로그인 완료</h1>
+		
+		<h3 style="margin-left: 50px;margin-bottom: 10px;margin-top: 35px;">사용자 정보</h3>       
+        <div class="user info" style="/* border: ridge; */text-align: left;-webkit-text-stroke: medium;margin-left: 50px;">
+            App User Id : ${appUserId}
             <br> 닉네임 : ${nickName}
             <br> 이메일 : ${email}
             <br> Access Token : ${accessToken}
@@ -80,12 +80,12 @@
 				<input type="button" value="로그 검색" onclick="location.href='/log'"> 
 			</div>
         </div>
-        <h2 style="margin-left: 100px;"> 유저 검색 </h2>
+        <h2 style="margin-left: 100px;margin-top: 30px;margin-bottom: 10px;"> 유저 검색 </h2>
         <div class="s01">
-            <form name="search_form">
+            <form>
                 <div class="inner-form">
                     <div class="input-field first-wrap">
-                        <input id="nickname" type="text" onkeypress="return event.keyCode != 13;" placeholder="검색할 닉네임을 입력" />
+                        <input id="search" type="text" onkeypress="return event.keyCode != 13;" placeholder="검색할 닉네임을 입력" />
                     </div>
                     <div class="input-field third-wrap">
                         <button class="btn-search" type="button" onclick="fn_click_button_search(event)">검&nbsp;&nbsp;색</button>
@@ -94,26 +94,22 @@
             </form>
         </div>
         <section id="table_empty" style="display:none; background-image: none !important; backgrond-color:#333; margin-top:30px; font-size:20px;">
-            <div class="inner">
-                <div style="/* color:white; */text-align:center;">검색 결과가 없습니다.</div>
-            </div>
+            <div style="/* color:white; */text-align: left;margin-left: 50px;">검색 결과가 없습니다.</div>
         </section>
         <section id="table" style="display:none; background-image: none !important; backgrond-color:#333">
-            <div class="inner">
-                <table class="zui-table">
-                    <thead>
-                        <tr>
-                            <th>APP_USER_ID</th>
-                            <th>NICKNAME</th>
-                            <th>ACCESS_TOKEN</th>
-                            <th>REFRESH_TOKEN</th>
-                            <th>CREATED_AT</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table_body">
-                    </tbody>
-                </table>
-            </div>
+            <table class="zui-table">
+                <thead>
+                    <tr>
+                        <th>APP_USER_ID</th>
+                        <th>NICKNAME</th>
+                        <th>ACCESS_TOKEN</th>
+                        <th>REFRESH_TOKEN</th>
+                        <th>CREATED_AT</th>
+                    </tr>
+                </thead>
+                <tbody id="table_body">
+                </tbody>
+            </table>
         </section>
     </body>
 

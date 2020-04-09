@@ -12,9 +12,6 @@
             function fn_click_button_search(event) {
                 event.preventDefault();
                 fn_tbody_clear();
-                $("#table").hide();
-                $("#table_empty").hide();
-
                 $.ajax({
                     url: "/api/log?searchString=" + $("#search").val(),
                     dataType: 'json',
@@ -22,14 +19,14 @@
                         if (resultData.length > 0) {
                             $.each(resultData, function(index, item) {
                                 var targetTR = $("<tr></tr>");
-                                targetTR.append("<td width='100px'>" + item.request_url + "</td>");
-                                targetTR.append("<td width='100px'>" + item.request_method + "</td>");
-                                targetTR.append("<td width='100px'>" + item.request_header + "</td>");
-                                targetTR.append("<td width='100px'>" + item.request_body + "</td>");
-                                targetTR.append("<td width='100px'>" + item.response_code + "</td>");
-                                targetTR.append("<td width='100px'>" + item.response_header + "</td>");
-                                targetTR.append("<td width='100px'>" + item.response_body + "</td>");
-                                targetTR.append("<td width='100px'>" + item.created_at + "</td>");
+                                targetTR.append("<td><div style='width:150px;word-break:break-word;'>" + item.request_url + "</div></td>");
+                                targetTR.append("<td><div style='width:50px;word-break:break-word;'>" + item.request_method + "</div></td>");
+                                targetTR.append("<td><div style='width:200px;word-break:break-word;'>" + item.request_header + "</div></td>");
+                                targetTR.append("<td><div style='width:200px;word-break:break-word;'>" + item.request_body + "</div></td>");
+                                targetTR.append("<td><div style='width:50px;word-break:break-word;'>" + item.response_code + "</div></td>");
+                                targetTR.append("<td><div style='width:50px;word-break:break-word;'>" + item.response_header + "</div></td>");
+                                targetTR.append("<td><div style='width:200px;word-break:break-word;'>" + item.response_body + "</div></td>");
+                                targetTR.append("<td><div style='width:120px;word-break:break-word;'>" + item.created_at + "</div></td>");
                                 $("#table_body").append(targetTR);
                             });
                             console.log("데이타 있음");
@@ -70,30 +67,25 @@
 
         <!-- Informaion -->
         <section id="table_empty" style="display:none; background-image: none !important; backgrond-color:#333; margin-top:30px; font-size:20px;">
-            <div class="inner">
-                <div style="text-align:center;">검색 결과가 없습니다.</div>
-            </div>
+            <div style="/* color:white; */text-align: left;margin-left: 50px;">검색 결과가 없습니다.</div>
         </section>
-
         <section id="table" style="display:none; background-image: none !important; backgrond-color:#333">
-            <div>
-                <table class="zui-table">
-                    <thead>
-                        <tr>
-                            <th width="100px">Request_url</th>
-                            <th width="100px">Request_method</th>
-                            <th width="100px">Request_header</th>
-                            <th width="100px">Request_body</th>
-                            <th width="100px">Response_code</th>
-                            <th width="100px">Response_header</th>
-                            <th width="100px">Response_body</th>
-                            <th width="100px">Created_at</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table_body">
-                    </tbody>
-                </table>
-            </div>
+            <table class="zui-table">
+                <thead>
+                    <tr>
+                        <th width="100px">Request_url</th>
+                        <th width="100px">Request_method</th>
+                        <th width="100px">Request_header</th>
+                        <th width="100px">Request_body</th>
+                        <th width="100px">Response_code</th>
+                        <th width="100px">Response_header</th>
+                        <th width="100px">Response_body</th>
+                        <th width="100px">Created_at</th>
+                    </tr>
+                </thead>
+                <tbody id="table_body">
+                </tbody>
+            </table>
         </section>
     </body>
 
