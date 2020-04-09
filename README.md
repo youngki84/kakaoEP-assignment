@@ -16,17 +16,17 @@
 ## 구축 전략 
 * 디자인 패턴 : 
 	- Model-View-Controller 모델 채택
-* 패키지 구조 :
-	** (Java)
+* 패키지 구조 (Java) :
+	(Java)
 	- com.kakao.assignment
 	- com.kakao.assignment.controller
 	- com.kakao.assignment.service
 	- com.kakao.assignment.dao
 	- com.kakao.assignment.object
 	- com.kakao.assignment.util
-	** (SQL)
+* 패키지 구조 (SQL) :
 	- resources/mapper
-	** (Web)
+* 패키지 구조 (Web) :
 	- WEB-INF/views
 * Sequence Flow :
 	- Web browser > KakaoController > KakaoService > KakaoDAO > kakao_SQL
