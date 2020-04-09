@@ -49,7 +49,7 @@
 	- DAO에 의해서 실행되는 Database SQL문  
 * 로그 기록 :
 	- Rest API 호출이 일어날 때마다 RDB에 Request/Response 데이터 Insert 
-	
+
 ## 작동 방식 
 * 로그인 : 
 	- 첫 화면에서 로그인 버튼 클릭하여 카카오 로그인 진행 
@@ -65,6 +65,15 @@
 * 로그 검색 : 
 	- 로그 검색 화면으로 진입 
 	- 검색할 문구 입력하면 해당 문구를 가진 모든 컬럼을 가져옴   
+
+## 데이터베이스 테이블 정보 
+* Database 명 : kakao
+* 사용자 정보 : 
+	- 테이블 명 : kakao_users
+	- 컬럼 명 : id, app_user_id, nickname, access_token, refresh_token, created_at
+* 로그 정보 :
+	- 테이블 명 : kakao_api_logs
+	- 컬럼 명 : id, request_url, request_method, request_header, request_body, response_code, response_header, response_body, created_at
 
 ## 테스트 전략 
 * junit으로 Rest Call에 대한 결과값 확인  
