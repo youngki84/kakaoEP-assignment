@@ -17,7 +17,6 @@
 * 디자인 패턴 : 
 	- Model-View-Controller 모델 채택
 * 패키지 구조 (Java) :
-	(Java)
 	- com.kakao.assignment
 	- com.kakao.assignment.controller
 	- com.kakao.assignment.service
