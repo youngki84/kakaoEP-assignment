@@ -56,7 +56,7 @@ public class KakaoController {
         return "searchLog";
     }
     
-    public static TokenVO tokens;
+    //public static TokenVO tokens;
     
     /**
 	 * 카카오 유저 로그인 (카카오API 사용) 
@@ -80,7 +80,7 @@ public class KakaoController {
 		
     	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
     	
-        tokens = kakaoService.kakaoGetTokens(code);
+        TokenVO tokens = kakaoService.kakaoGetTokens(code);
         System.out.println("controller access_token : " + tokens.getAccessToken());
         
         UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
@@ -97,7 +97,9 @@ public class KakaoController {
         if (userInfo.getAppUserId() != 0) {
             session.setAttribute("appUserId", userInfo.getAppUserId());
             session.setAttribute("nickName", userInfo.getNickname());
-            session.setAttribute("email", userInfo.getEmail());
+            if(!userInfo.getEmail().isEmpty()) {
+            	session.setAttribute("email", userInfo.getEmail());
+            }
             session.setAttribute("accessToken", tokens.getAccessToken());
             session.setAttribute("refreshToken", tokens.getRefreshToken());
         }
@@ -109,53 +111,53 @@ public class KakaoController {
 	 *
 	 * @param session    세션 정보 
 	 */
-    @RequestMapping(value="/refreshlogin", method=RequestMethod.POST)
-    public String loginAfterRefresh(HttpSession session) {
-    	tokens = kakaoService.kakaoGetAccessTokenAfterRefresh(tokens);
-        System.out.println("controller access_token : " + tokens.getAccessToken());
-        
-        UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
-        System.out.println("login Controller : " + userInfo);
-        
-        if (userInfo.getEmail() != null) {
-            session.setAttribute("appUserId", userInfo.getAppUserId());
-            session.setAttribute("access_Token", tokens.getAccessToken());
-        }
-        return "login";
-    }
+//    @RequestMapping(value="/refreshlogin", method=RequestMethod.POST)
+//    public String loginAfterRefresh(HttpSession session) {
+//    	tokens = kakaoService.kakaoGetAccessTokenAfterRefresh(tokens);
+//        System.out.println("controller access_token : " + tokens.getAccessToken());
+//        
+//        UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
+//        System.out.println("login Controller : " + userInfo);
+//        
+//        if (userInfo.getEmail() != null) {
+//            session.setAttribute("appUserId", userInfo.getAppUserId());
+//            session.setAttribute("access_Token", tokens.getAccessToken());
+//        }
+//        return "login";
+//    }
     
     /**
 	 * 카카오 유저 정보 조회 (카카오API 사용) 
 	 *
 	 * @param session    세션 정보 
 	 */
-    @RequestMapping(value="/getUserInfoFrKaKao")
-    public String getUserInfo(HttpSession session) throws IOException {
-        
-    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-		
-    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
-		String reqHeaderData = Utils.makeHeaderFromRequest(request);
-		String reqBodyData = Utils.makeBodyFromRequest(request);
-		int resCode = response.getStatus();
-		
-		System.out.println("reqHeaderData = " + reqHeaderData);
-		System.out.println("reqBodyData = " + reqBodyData);
-		
-    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
-    	
-//        UserVO userInfo = kakao.kakaoGetUserInfo(session.getAttribute("access_Token").toString());
-    	if(tokens.getAccessToken().isEmpty()) {
-    		System.out.println("Access token is empty");
-    		throw new IOException("Access token is empty");
-    	}
-    	else {
-    		UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
-    	}
-        
-        return "login";
-    }
+//    @RequestMapping(value="/getUserInfoFrKaKao")
+//    public String getUserInfo(HttpSession session) throws IOException {
+//        
+//    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+//    	HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+//		
+//    	String reqUrl = "http://" + request.getLocalName()+":" + request.getLocalPort() + request.getRequestURI();
+//		String reqHeaderData = Utils.makeHeaderFromRequest(request);
+//		String reqBodyData = Utils.makeBodyFromRequest(request);
+//		int resCode = response.getStatus();
+//		
+//		System.out.println("reqHeaderData = " + reqHeaderData);
+//		System.out.println("reqBodyData = " + reqBodyData);
+//		
+//    	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
+//    	
+////        UserVO userInfo = kakao.kakaoGetUserInfo(session.getAttribute("access_Token").toString());
+//    	if(tokens.getAccessToken().isEmpty()) {
+//    		System.out.println("Access token is empty");
+//    		throw new IOException("Access token is empty");
+//    	}
+//    	else {
+//    		UserVO userInfo = kakaoService.kakaoGetUserInfo(tokens);
+//    	}
+//        
+//        return "login";
+//    }
     
     /**
 	 * 카카오 유저 로그아웃 (카카오API 사용) 
@@ -175,11 +177,13 @@ public class KakaoController {
 		
 		System.out.println("reqHeaderData = " + reqHeaderData);
 		System.out.println("reqBodyData = " + reqBodyData);
+		System.out.println("access_Token = " + session.getAttribute("accessToken"));
+		
 		
     	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
     	
-        kakaoService.kakaoLogout((String)session.getAttribute("access_Token"));
-        session.removeAttribute("access_Token");
+        kakaoService.kakaoLogout((String)session.getAttribute("accessToken"));
+        session.removeAttribute("accessToken");
         session.removeAttribute("appUserId");
         session.setAttribute("logout", "yes");
         
@@ -207,9 +211,13 @@ public class KakaoController {
 		
     	kakaoService.insertLog(reqUrl, request.getMethod(), reqHeaderData, reqBodyData, resCode, "", "");
     	
-        kakaoService.kakaoUnlink((String)session.getAttribute("access_Token"));
-        session.removeAttribute("access_Token");
-        session.removeAttribute("appUserId");
+        int result = kakaoService.kakaoUnlink((String)session.getAttribute("accessToken"));
+        if(result == 200) {
+        	kakaoDAO.deleteKakaoUser((long) session.getAttribute("appUserId"));
+        	
+        	session.removeAttribute("accessToken");
+	        session.removeAttribute("appUserId");
+        }
         return "main";
     }
     
@@ -358,7 +366,7 @@ public class KakaoController {
     	if(user == null) {
     		throw new IOException("User is empty.");
     	} else {
-    		int res = kakaoDAO.deleteKakaoUser(userInfo);
+    		int res = kakaoDAO.deleteKakaoUser(appUserId);
     		if(res == 1) {
     			result = "Delete Success.";
     		}

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,7 +185,9 @@ public class KakaoService {
 	        
 	      //log insert
             insertLog(conn.getURL().toString(), conn.getRequestMethod(), headerData, "", conn.getResponseCode(), "", result);
-	        
+
+            String email = "";
+            
 	        JsonElement element = JsonParser.parseString(result);
 	        
 	        JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
@@ -193,7 +196,20 @@ public class KakaoService {
 	        long id = element.getAsJsonObject().get("id").getAsLong();
 	        String connected_at = element.getAsJsonObject().get("connected_at").getAsString();
 	        String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-	        String email = kakao_account.getAsJsonObject().get("email").getAsString();
+	        
+	        Set<String> keyset = kakao_account.getAsJsonObject().keySet();
+	        boolean email_yes = false;
+	        for(String s : keyset) {
+	        	if(s.equals("email")) {
+	        		email_yes = true;
+	        	}
+	        }
+	        if(email_yes) {
+	        	email = kakao_account.getAsJsonObject().get("email").getAsString();
+	        } else {
+	        	email = "동의하지 않은 항목";
+	        }
+	        
 	        String profile_image_url = properties.getAsJsonObject().get("profile_image").getAsString();
 	        String thumbnail_image_url = properties.getAsJsonObject().get("thumbnail_image").getAsString();
 	        
@@ -254,15 +270,16 @@ public class KakaoService {
 	    }
 	}
 	
-	public void kakaoUnlink(String access_Token) {
+	public int kakaoUnlink(String access_Token) {
 	    String reqURL = "https://kapi.kakao.com/v1/user/unlink";
+	    int responseCode = 0;
 	    try {
 	        URL url = new URL(reqURL);
 	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	        conn.setRequestMethod("POST");
 	        conn.setRequestProperty("Authorization", "Bearer " + access_Token);
 	        
-	        int responseCode = conn.getResponseCode();
+	        responseCode = conn.getResponseCode();
 	        System.out.println("responseCode : " + responseCode);
 	        
 	        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -292,6 +309,8 @@ public class KakaoService {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
 	    }
+	    
+	    return responseCode;
 	}
 	
 	public void insertLog(String request_url, String request_method, String request_header, String request_body, int response_code, String response_header, String response_body) {

@@ -46,10 +46,10 @@ public class KakaoDAO {
 		return sqlSession.update(Namespace + ".updateKakaoUser", userInfo);
 	}
 	
-	public int deleteKakaoUser(UserVO userInfo) {
+	public int deleteKakaoUser(long appUserId) {
 		logger.info("deleteKakaoUser" );
 		System.out.println("deleteKakaoUser");
-		return sqlSession.delete(Namespace + ".deleteKakaoUser", userInfo);
+		return sqlSession.delete(Namespace + ".deleteKakaoUser", appUserId);
 	}
 	
 	public List<LogVO> seleteKakaoApiLogs(String search_string) {

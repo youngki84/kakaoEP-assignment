@@ -58,7 +58,7 @@
 		 WHERE app_user_id = #{app_user_id}
 	</update>
 
-	<delete id="deleteKakaoUser" parameterType="com.kakao.assignment.object.UserVO">
+	<delete id="deleteKakaoUser" parameterType="long">
 		DELETE FROM kakao_users
 		      WHERE	app_user_id = #{app_user_id} 
 	</delete>
